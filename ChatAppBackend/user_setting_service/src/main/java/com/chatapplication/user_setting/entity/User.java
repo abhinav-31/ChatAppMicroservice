@@ -26,8 +26,8 @@ public class User extends BaseEntity{
     @Column
     private String profilePhoto;
     @Column
-    private LocalDateTime lastSeen; // TimeStamp for the last time the user was active
-    @OneToOne(cascade = CascadeType.ALL)
+    private LocalDateTime lastSeen;                                // TimeStamp for the last time the user was active
+    @OneToOne(cascade = CascadeType.ALL)                           // Bi-direction, child side of association, owning foreign key
     @JoinColumn(name = "settings_id",referencedColumnName = "id")
     private Settings settings;
 }

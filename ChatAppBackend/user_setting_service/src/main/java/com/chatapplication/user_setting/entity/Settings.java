@@ -14,13 +14,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class Settings extends BaseEntity{
 
-    @OneToOne(mappedBy="settings")
+    @OneToOne(mappedBy="settings")                 // Bi-direction, parent side of association
     private User user;
 
-    @ElementCollection
-    @CollectionTable(name="user_settings",joinColumns=@JoinColumn(name="settings_id"))
-    @MapKeyColumn(name="setting_key")
-    @Column(name="setting_value")
-    private Map<String,String> settingsMap;
+    @ElementCollection                             // Indicates this field is not an entity itself but a collection of elements stored in a separate table.
+    @CollectionTable(name="user_settings",joinColumns=@JoinColumn(name="settings_id")) // configures the join table used to store the collection
+    @MapKeyColumn(name="setting_key")              // column that store keys of the map
+    @Column(name="setting_value")                  // column that store values of the map
+    private Map<String,String> settingsMap;        // A map of user settings where keys are setting names and values are their corresponding values.
 
 }
