@@ -1,5 +1,8 @@
 package com.chatapplication.user_setting.util;
 
+import com.chatapplication.user_setting.entity.User;
+import com.chatapplication.user_setting.repository.ContactRepository;
+
 import java.util.Map;
 
 
@@ -26,4 +29,35 @@ public class SettingsUtils {
             Map.entry("notifications.group_chat", "true"),
             Map.entry("app_language", "english")
     );
+
+    public static boolean checkVisibilityOfPrivacy(Map<String, String> settings, String settingKey, User requestingUser, User contact, ContactRepository contactRepository) {
+        String visibility = settings.get(settingKey);
+
+        // Check if the privacy setting allows visibility for everyone
+        if (visibility.equals(SettingsUtils.EVERYONE)) {
+            return true;
+        }
+
+        // Check if the privacy setting is restricted to nobody
+        if (visibility.equals(SettingsUtils.NOBODY)) {
+            return false;
+        }
+
+        // Check if the privacy setting is for the requesting user's contacts
+        if (visibility.equals(SettingsUtils.MY_CONTACTS)) {
+            return isUserContactOf(requestingUser, contact, contactRepository);
+        }
+
+        // Check if the privacy setting is for everyone except the requesting user's contacts
+        if (visibility.equals(SettingsUtils.MY_CONTACTS_EXCEPT)) {
+            return !isUserContactOf(requestingUser, contact, contactRepository);
+        }
+
+        return false;
+    }
+
+    private static boolean isUserContactOf(User requestingUser, User contact, ContactRepository contactRepository) {
+        // Check if the contact is in the requesting user's contacts list
+        return contactRepository.existsByUserAndContact(requestingUser, contact);
+    }
 }
