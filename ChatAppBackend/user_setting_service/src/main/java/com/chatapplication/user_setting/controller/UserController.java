@@ -24,9 +24,6 @@ public class UserController {
     // save user
     @PostMapping("/save")
     public ResponseEntity<?> saveUser(@RequestBody SaveUserReqDTO saveUserReqDTO, HttpServletRequest request) {
-        System.out.println("user save api invoke");
-        System.out.println("request:" + request);
-
         String result = userService.saveUser(saveUserReqDTO,request);
         // Clear Cookie
         String clearCookie = CookieUtils.deleteCookie(request,"signUpSessionId");
