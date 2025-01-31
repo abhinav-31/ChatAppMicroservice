@@ -75,7 +75,7 @@ public class AuthController {
     public ResponseEntity<?> userLogin(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
         GenerateOtpResponseDTO response = authService.userLogin(loginRequestDTO);
         if(response.isSuccess()){
-            String cookie = CookieUtils.generateCookie(response.getData(), 2 * 24 * 60 * 24);
+            String cookie = CookieUtils.generateCookie(response.getData(), 2 * 24 * 60 * 60);
             return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie",cookie).body(response.getMessage());
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
