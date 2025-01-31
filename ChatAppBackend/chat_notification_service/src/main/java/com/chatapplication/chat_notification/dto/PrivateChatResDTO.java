@@ -5,6 +5,7 @@ import com.chatapplication.chat_notification.entity.Message;
 import lombok.*;
 
 @Builder
+@Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
