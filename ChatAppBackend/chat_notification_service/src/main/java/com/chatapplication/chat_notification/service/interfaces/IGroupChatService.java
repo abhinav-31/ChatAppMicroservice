@@ -9,7 +9,7 @@ public interface IGroupChatService {
 
     Boolean addMembersToGroup(GroupChatAddMemReqDTO groupChatAddMemReqDTO);
 
-    Boolean removeMembersFromGroup(GroupChatRemoReqDTO groupChatRemoReqDTO);
+    Boolean removeMembersFromGroup(GroupChatRemoveMemberReqDTO groupChatRemoReqDTO);
 
     void deleteGroupChatInstanceByMembers(DeleteGroupInstByMemDTO deleteGroupInstByMemDTO);
 
