@@ -39,7 +39,7 @@ public class GroupChatController {
 
     // Only admin can remove the members from the group
     @PostMapping("/remove-members")
-    public ResponseEntity<?> removeMembersFromGroup(@RequestBody GroupChatRemoReqDTO groupChatRemoReqDTO) {
+    public ResponseEntity<?> removeMembersFromGroup(@RequestBody GroupChatRemoveMemberReqDTO groupChatRemoReqDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(groupChatService.removeMembersFromGroup(groupChatRemoReqDTO));
     }
 

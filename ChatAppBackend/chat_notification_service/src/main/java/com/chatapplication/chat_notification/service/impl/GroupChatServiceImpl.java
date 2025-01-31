@@ -73,7 +73,7 @@ public class GroupChatServiceImpl implements IGroupChatService {
     }
 
     @Override
-    public Boolean removeMembersFromGroup(GroupChatRemoReqDTO groupChatRemoReqDTO) {
+    public Boolean removeMembersFromGroup(GroupChatRemoveMemberReqDTO groupChatRemoReqDTO) {
         // Get group from repository
         Chat groupChat = groupChatRepository.findByChatId(groupChatRemoReqDTO.getGroupId()).orElseThrow(()->new ChatNotFoundException("Group not found"));
         // get group members and then remove them
