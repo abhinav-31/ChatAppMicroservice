@@ -21,7 +21,7 @@ public class SettingsController {
     }
     // update user settings
     @PostMapping("/update_settings/{userId}")
-    public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, Map<String,String> updateSetting){
+    public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, @RequestBody Map<String,String> updateSetting){
         return ResponseEntity.status(HttpStatus.OK).body(settingsService.updateUserSettings(userId,updateSetting));
     }
 
