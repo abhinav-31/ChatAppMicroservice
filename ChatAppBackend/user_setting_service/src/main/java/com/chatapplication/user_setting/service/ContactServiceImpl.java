@@ -1,7 +1,7 @@
 package com.chatapplication.user_setting.service;
 
 import com.chatapplication.user_setting.dto.ApiResponse;
-import com.chatapplication.user_setting.dto.ContactReponseDTO;
+import com.chatapplication.user_setting.dto.ContactResponseDTO;
 import com.chatapplication.user_setting.entity.Contact;
 import com.chatapplication.user_setting.entity.User;
 import com.chatapplication.user_setting.exception.ResourceNotFoundException;
@@ -30,15 +30,15 @@ public class ContactServiceImpl implements IContactService{
     ISettingsService settingsService;
 
     @Override
-    public List<ContactReponseDTO> getContacts(Long userId) {
+    public List<ContactResponseDTO> getContacts(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User with given id: "+userId+" not found"));
         // fetch all contacts
         List<User> contacts = contactRepository.findContactsByUserId(userId);
-        List<ContactReponseDTO> contactList = new ArrayList<>();
+        List<ContactResponseDTO> contactList = new ArrayList<>();
         /*for(User contact : contacts){
             // fetch the settings
             Map<String, String> contactSettings = settingsService.getUserSettings(contact.getId());
-            ContactReponseDTO contactDto = new ContactReponseDTO();
+            ContactResponseDTO contactDto = new ContactResponseDTO();
             contactDto.setUsername(contact.getUsername());
             // Check if the phone number is visible to the user
             if (SettingsUtils.checkVisibilityOfPrivacy(contactSettings, "privacy.phone_number_visibility", user, contact, contactRepository)) {
@@ -65,7 +65,7 @@ public class ContactServiceImpl implements IContactService{
         }*/
        return contacts.stream().map(contact -> {
            Map<String, String> contactSettings = settingsService.getUserSettings(contact.getId());
-           return ContactReponseDTO.builder()
+           return ContactResponseDTO.builder()
                    .username(contact.getUsername())
                    .phoneNumber(SettingsUtils.checkVisibilityOfPrivacy(contactSettings,"privacy.phone_number_visibility",user,contact,contactRepository)
                            ?contact.getPhoneNumber():null)
