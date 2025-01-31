@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.util.Pair;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,9 @@ public class OtpServiceImpl implements IOtpService {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private ITwilioOtpService twilioOtpService;
+    @Autowired
+    private JwtService jwtService;
+
     private static final int OTP_TTL_MINUTE = 3;
     private static final int MAX_ATTEMPTS = 3;
     private static final int BLOCKED_TIME = 5; // For wrong input
@@ -103,8 +105,8 @@ public class OtpServiceImpl implements IOtpService {
         // Send Otp via message
 
         // smsService.sendOtp(phoneNumber, otpValue);
-        boolean smsSent = twilioOtpService.sendOtp(phoneNumber, otpValue);
-        if (smsSent) {
+//        boolean smsSent = twilioOtpService.sendOtp(phoneNumber, otpValue);
+        if (true) {
             log.info("Otp {}, sent to {}", otpValue, phoneNumber);
             return Pair.of("Otp sent successfully to your registered phoneNumber, Please Verify to continue", true);
         } else {
@@ -121,7 +123,7 @@ public class OtpServiceImpl implements IOtpService {
     @Override
     public OtpVerificationResponse verifyOtp(String otp, HttpServletRequest request, String context) {
         // Extract uuid from the request
-        String uuid = CookieUtils.extractCookie(request);
+        String uuid = CookieUtils.extractCookie(request,context.equals("signup")?"signUpSessionId":"loginSessionId");
         if (uuid == null) {
             log.info("No session cookie found during OTP verification.");
             return new OtpVerificationResponse("Session expired. Please restart the process.", false);
@@ -170,20 +172,20 @@ public class OtpServiceImpl implements IOtpService {
             redisTemplate.delete(otpKey);
             redisTemplate.delete(attemptKey);
 
-            // Extract metadata from the redis
-            // and add verifiedAt and allowedUntil(24 hrs)
-            String metaKey = "signup:verified:" + uuid;
+            String metaKey = context+":verified:" + uuid;
             Map<String, Object> metadata = (Map<String, Object>) redisTemplate.opsForValue().get(metaKey);
-            long verifiedAt = System.currentTimeMillis();
-            long allowedUntil = verifiedAt + TimeUnit.HOURS.toMillis(24);
-            metadata.put("verifiedAt", verifiedAt);
-            metadata.put("allowedUntil", allowedUntil);
-            redisTemplate.opsForValue().set(metaKey, metadata, 24, TimeUnit.HOURS);
-
-
             if (context.equals("signup")) {
+                // Extract metadata from the redis
+                // and add verifiedAt and allowedUntil(24 hrs)
+
+
+                long verifiedAt = System.currentTimeMillis();
+                long allowedUntil = verifiedAt + TimeUnit.HOURS.toMillis(24);
+                metadata.put("verifiedAt", verifiedAt);
+                metadata.put("allowedUntil", allowedUntil);
+                redisTemplate.opsForValue().set(metaKey, metadata, 24, TimeUnit.HOURS);
                 redisTemplate.delete("signup:maxGenerate:" + metadata.get("phoneNumber"));
-            } else if (context.equals("login")) {
+            } else if (context.equals("login")){
                 redisTemplate.delete("login:maxGenerate:" + metadata.get("phoneNumber"));
             }
             redisTemplate.delete("otpTimestamp:" + metadata.get("phoneNumber"));

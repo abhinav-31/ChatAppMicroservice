@@ -3,6 +3,7 @@ package com.chatapplication.user_setting.service;
 import com.chatapplication.user_setting.dto.GenerateOtpResponseDTO;
 import com.chatapplication.user_setting.dto.LoginRequestDTO;
 import com.chatapplication.user_setting.dto.SignUpRequestDTO;
+import com.chatapplication.user_setting.exception.ResourceNotFoundException;
 import com.chatapplication.user_setting.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,15 @@ public class AuthServiceImpl implements IAuthService {
         if (!userRepository.existsByPhoneNumber(loginRequestDTO.getPhoneNumber())) {
             return new GenerateOtpResponseDTO("Phone Number not exist, Please sign up first",false,"");
         } else {
+            String email = userRepository.findEmail(loginRequestDTO.getPhoneNumber()).orElseThrow(() -> new ResourceNotFoundException("Email Not Found"));
             String uuid = UUID.randomUUID().toString();
+            Map<String, Object> metadata = new HashMap<String, Object>();
+            metadata.put("email",email);
+            metadata.put("phoneNumber", loginRequestDTO.getPhoneNumber());
+
+            String metaKey = "login:verified:"+uuid;
+            redisTemplate.opsForValue().set(metaKey, metadata);
+            redisTemplate.expire(metaKey,2, TimeUnit.DAYS);
             Pair<String, Boolean> generateOtpResponse = otpService.generateOtp(loginRequestDTO.getPhoneNumber(), uuid, "login");
             return new GenerateOtpResponseDTO(generateOtpResponse.getFirst(),generateOtpResponse.getSecond(),uuid);
         }
