@@ -1,0 +1,27 @@
+package com.chatapplication.chat_notification.entity;
+
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+@Builder
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(collection = "chats")
+public class Chat {
+    @Id
+    private String chatId;                                      // chatId for PrivateChat & groupId for GroupChat
+    private String groupName;                                   // null for private chat & not null for group chat
+    private String admin;                                       // null for private chat & not null for group chat
+    private List<String> members;                               // 2 members for private chat & 1 or more for group chat
+    private List<Message> messages;                             // Messages in the chat
+    private LocalDateTime creationTimestamp;                    // Timestamp for the chat creation
+    private Map<String, LocalDateTime> deletedFor;              // Key: userId, Value: time of deletion --> for private chat
+}
