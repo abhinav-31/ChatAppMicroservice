@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { IoIosArrowDropdown } from "react-icons/io";
 import CountryCodes from "../../../assets/countrycodes/CountryCodes.json";
 import Modal from "./Modal"; // Reusable Modal component
+import { useNavigate } from "react-router";
 
 const DeleteAccount = () => {
   const [countries] = useState(CountryCodes);
@@ -14,7 +15,7 @@ const DeleteAccount = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
 
@@ -30,7 +31,7 @@ const DeleteAccount = () => {
     country.name.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
 
- 
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,6 +39,7 @@ const DeleteAccount = () => {
   };
 
   const confirmDeletion = async () => {
+    navigate('/');
     if (!selectedCountry?.dial_code || phoneNumber.length !== 10) return;
 
     setIsLoading(true);
@@ -71,8 +73,8 @@ const DeleteAccount = () => {
       {/* Form Section */}
       <form onSubmit={handleSubmit} className="space-y-6 mt-4">
         {/* Country Selection */}
-        <div className="space-y-4" ref={dropdownRef}> 
-          <label className="block text-lg font-medium text-gray-700" onClick={()=> setIsDropdownOpen(false)}>
+        <div className="space-y-4" ref={dropdownRef}>
+          <label className="block text-lg font-medium text-gray-700" onClick={() => setIsDropdownOpen(false)}>
             Country
           </label>
           <div className="relative">
@@ -81,7 +83,7 @@ const DeleteAccount = () => {
               type="text"
               placeholder="Search country..."
               value={searchTerm}
-              onChange={(e) => {setSearchTerm(e.target.value); setIsDropdownOpen(true)}}
+              onChange={(e) => { setSearchTerm(e.target.value); setIsDropdownOpen(true) }}
               onFocus={() => setIsDropdownOpen(true)}
               onClick={(e) => {
                 e.stopPropagation();
@@ -131,12 +133,12 @@ const DeleteAccount = () => {
             Phone Number
           </label>
           <div className="flex relative items-center gap-4 py-2">
-            <div className="gap-2 border-b border-gray-200">
+            <div className=" border-b border-gray-200">
               <span className="text-gray-500 whitespace-nowrap">
                 {selectedCountry?.dial_code || "+XX"}
               </span>
             </div>
-            <div className="gap-2 relative border-b border-gray-200">
+            <div className=" relative border-b border-gray-200">
               <input
                 type="tel"
                 value={phoneNumber}
@@ -154,11 +156,10 @@ const DeleteAccount = () => {
         <button
           type="submit"
           disabled={!selectedCountry || phoneNumber.length !== 10}
-          className={`w-full py-3 rounded-lg font-medium transition-colors cursor-pointer ${
-            !selectedCountry || phoneNumber.length !== 10
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-red-500 text-white hover:bg-red-600"
-          }`}
+          className={`w-full py-3 rounded-lg font-medium transition-colors cursor-pointer ${!selectedCountry || phoneNumber.length !== 10
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-red-500 text-white hover:bg-red-600"
+            }`}
         >
           {isLoading ? "Processing..." : "Confirm Account Deletion"}
         </button>
