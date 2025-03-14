@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import {
 	saveUser,
 	updateUser,
-} from "../../services/UserSettingService/UserSettingServiceAuth";
+} from "../../services/UserSettingService/UserSettingService";
 import { useDispatch, useSelector } from "react-redux";
 import { saveUserProfile } from "../../features/slice/userSlice";
 import { useState } from "react";
