@@ -1,0 +1,160 @@
+
+networks:
+  chatapp-network:
+    driver: bridge
+
+services:
+  service-registry:
+    build:
+      context: ./service_registry
+      dockerfile: Dockerfile
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - chatapp-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8083:8083"
+    networks:
+      - chatapp-network
+    depends_on:
+      service-registry:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: unless-stopped
+
+  user-setting-service:
+    build:
+      context: ./user_setting_service
+      dockerfile: Dockerfile
+    container_name: user-setting-service
+    ports:
+      - "8081:8081"
+    networks:
+      - chatapp-network
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    env_file:
+      - ./user_setting_service/user_setting.env
+    restart: unless-stopped
+
+  chat-notification-service:
+    build:
+      context: ./chat_notification_service
+      dockerfile: Dockerfile
+    container_name: chat-notification-service
+    ports:
+      - "8082:8082"
+    networks:
+      - chatapp-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+    env_file:
+      - ./chat_notification_service/chat_notfication.env
+    restart: unless-stopped
+
+  mysql-db:
+    image: mysql
+    container_name: mysql-db
+    ports:
+      - "3307:3306"
+    networks:
+      - chatapp-network
+    env_file:
+      - ./database.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:6.0.20-jammy
+    container_name: mongodb
+    ports:
+      - "27018:27017"
+    networks:
+      - chatapp-network
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4.2
+    container_name: redis
+    ports:
+      - "6378:6379"
+    networks:
+      - chatapp-network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+      - "61614:61613"
+    networks:
+      - chatapp-network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  mongo_data:
+  redis_data:
+  rabbitmq_data:
