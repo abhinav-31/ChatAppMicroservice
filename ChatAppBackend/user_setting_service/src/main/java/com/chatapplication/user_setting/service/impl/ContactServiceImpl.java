@@ -1,4 +1,4 @@
-package com.chatapplication.user_setting.service;
+package com.chatapplication.user_setting.service.impl;
 
 import com.chatapplication.user_setting.dto.ContactAddReqDTO;
 import com.chatapplication.user_setting.dto.ContactResponseDTO;
@@ -7,6 +7,8 @@ import com.chatapplication.user_setting.entity.User;
 import com.chatapplication.user_setting.exception.ResourceNotFoundException;
 import com.chatapplication.user_setting.repository.ContactRepository;
 import com.chatapplication.user_setting.repository.UserRepository;
+import com.chatapplication.user_setting.service.interfaces.IContactService;
+import com.chatapplication.user_setting.service.interfaces.ISettingsService;
 import com.chatapplication.user_setting.util.SettingsUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ public class ContactServiceImpl implements IContactService {
         List<ContactResponseDTO> contactList = new ArrayList<>();
 
         List<ContactResponseDTO> list = contacts.stream().map(contact -> this.contactResponseDTOBuilder(contact, user)).toList();
-        System.out.println("Contacts list: "+list);
+        System.out.println("Contacts list: " + list);
         return list;
     }
 
@@ -48,7 +50,7 @@ public class ContactServiceImpl implements IContactService {
     public ContactResponseDTO addContact(ContactAddReqDTO contactAddReqDTO) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        System.out.println("Contact Phone Number : "+contactAddReqDTO.getContactPhoneNumber());
+        System.out.println("Contact Phone Number : " + contactAddReqDTO.getContactPhoneNumber());
         User contact = userRepository.findByPhoneNumber(contactAddReqDTO.getContactPhoneNumber()).orElseThrow(() -> new ResourceNotFoundException("Contact is not present in the system"));
 
         // check contact already added for the user
@@ -81,34 +83,3 @@ public class ContactServiceImpl implements IContactService {
                 .build();
     }
 }
-
-
-//================================================================================================
- /*for(User contact : contacts){
-            // fetch the settings
-            Map<String, String> contactSettings = settingsService.getUserSettings(contact.getId());
-            ContactResponseDTO contactDto = new ContactResponseDTO();
-            contactDto.setUsername(contact.getUsername());
-            // Check if the phone number is visible to the user
-            if (SettingsUtils.checkVisibilityOfPrivacy(contactSettings, "privacy.phone_number_visibility", user, contact, contactRepository)) {
-                contactDto.setPhoneNumber(contact.getPhoneNumber());
-            } else {
-                contactDto.setPhoneNumber(null);
-            }
-
-            // Check if the about field is visible to the user
-            if (SettingsUtils.checkVisibilityOfPrivacy(contactSettings, "privacy.about", user, contact, contactRepository)) {
-                contactDto.setAbout(contact.getAbout());
-            } else {
-                contactDto.setAbout(null);
-            }
-
-            // Check if the profile photo is visible to the user
-            if (SettingsUtils.checkVisibilityOfPrivacy(contactSettings, "privacy.profile_photo", user, contact, contactRepository)) {
-                contactDto.setProfilePicture(contact.getProfilePhoto());
-            } else {
-                contactDto.setProfilePicture(null);
-            }
-
-            contactList.add(contactDto);
-        }*/

@@ -1,6 +1,7 @@
-package com.chatapplication.user_setting.service;
+package com.chatapplication.user_setting.service.impl;
 
 import com.chatapplication.user_setting.config.TwilioConfig;
+import com.chatapplication.user_setting.service.interfaces.ITwilioOtpService;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +13,11 @@ import org.springframework.stereotype.Service;
 public class TwilioOtpServiceImpl implements ITwilioOtpService {
     @Autowired
     private TwilioConfig twilioConfig;
+
     @Override
     public boolean sendOtp(String phoneNumber, Integer otp) {
 
-        try{
+        try {
             PhoneNumber to = new PhoneNumber(phoneNumber);
             PhoneNumber from = new PhoneNumber(twilioConfig.getPhoneNumber());
             String sendMessage = "Dear Customer, Your OTP is **" + otp + "**" + "Please use this to verify and proceed further.";
@@ -24,10 +26,10 @@ public class TwilioOtpServiceImpl implements ITwilioOtpService {
                             from, // from
                             sendMessage)
                     .create();
-            log.info("Message sent info: {}",message.getBody());
+            log.info("Message sent info: {}", message.getBody());
             return true;
-        }catch(Exception e){
-            log.error("Error in sending OTP: {}",e.getMessage());
+        } catch (Exception e) {
+            log.error("Error in sending OTP: {}", e.getMessage());
             return false;
         }
 

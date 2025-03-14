@@ -1,4 +1,4 @@
-package com.chatapplication.user_setting.service;
+package com.chatapplication.user_setting.service.impl;
 
 import com.chatapplication.user_setting.dto.SaveUserReqDTO;
 import com.chatapplication.user_setting.dto.UserDataResponseDTO;
@@ -6,6 +6,7 @@ import com.chatapplication.user_setting.entity.Settings;
 import com.chatapplication.user_setting.entity.User;
 import com.chatapplication.user_setting.exception.ResourceNotFoundException;
 import com.chatapplication.user_setting.repository.UserRepository;
+import com.chatapplication.user_setting.service.interfaces.IUserService;
 import com.chatapplication.user_setting.util.CookieUtils;
 import com.chatapplication.user_setting.util.SettingsUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,9 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -74,7 +79,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDataResponseDTO getUser() {
-        String email = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         log.info("User From repo: {}", user);
         // Map user entity to dto
@@ -104,12 +109,13 @@ public class UserServiceImpl implements IUserService {
 
     // update logged-in user last seen
     @Override
-    public void updateUserLastSeen(){
+    public void updateUserLastSeen() {
         // Get Email from SecurityContextHolder
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // find user in the system
-        if(email!=null){
-            User user = userRepository.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User is not present in the system"));
+        if (email != null) {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("User is not present in the system"));
             // set the user last seen
             user.setLastSeen(LocalDateTime.now());
         }

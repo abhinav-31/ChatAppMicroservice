@@ -1,8 +1,9 @@
-package com.chatapplication.user_setting.service;
+package com.chatapplication.user_setting.service.impl;
 
 import com.chatapplication.user_setting.dto.OtpVerificationResponse;
-import com.chatapplication.user_setting.dto.OtpVerifyRequestDTO;
 import com.chatapplication.user_setting.exception.UserBlockedException;
+import com.chatapplication.user_setting.service.interfaces.IOtpService;
+import com.chatapplication.user_setting.service.interfaces.ITwilioOtpService;
 import com.chatapplication.user_setting.util.CookieUtils;
 import com.chatapplication.user_setting.util.RedisUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Transactional
 public class OtpServiceImpl implements IOtpService {
-    //    private static final Logger log = LoggerFactory.getLogger(OtpServiceImpl.class);
-    @Autowired
+@Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private ITwilioOtpService twilioOtpService;
@@ -123,7 +123,7 @@ public class OtpServiceImpl implements IOtpService {
     @Override
     public OtpVerificationResponse verifyOtp(String otp, HttpServletRequest request, String context) {
         // Extract uuid from the request
-        String uuid = CookieUtils.extractCookie(request,context.equals("signup")?"signUpSessionId":"loginSessionId");
+        String uuid = CookieUtils.extractCookie(request, context.equals("signup") ? "signUpSessionId" : "loginSessionId");
         if (uuid == null) {
             log.info("No session cookie found during OTP verification.");
             return new OtpVerificationResponse("Session expired. Please restart the process.", false);
@@ -172,7 +172,7 @@ public class OtpServiceImpl implements IOtpService {
             redisTemplate.delete(otpKey);
             redisTemplate.delete(attemptKey);
 
-            String metaKey = context+":verified:" + uuid;
+            String metaKey = context + ":verified:" + uuid;
             Map<String, Object> metadata = (Map<String, Object>) redisTemplate.opsForValue().get(metaKey);
             if (context.equals("signup")) {
                 // Extract metadata from the redis
@@ -185,7 +185,7 @@ public class OtpServiceImpl implements IOtpService {
                 metadata.put("allowedUntil", allowedUntil);
                 redisTemplate.opsForValue().set(metaKey, metadata, 24, TimeUnit.HOURS);
                 redisTemplate.delete("signup:maxGenerate:" + metadata.get("phoneNumber"));
-            } else if (context.equals("login")){
+            } else if (context.equals("login")) {
                 redisTemplate.delete("login:maxGenerate:" + metadata.get("phoneNumber"));
             }
             redisTemplate.delete("otpTimestamp:" + metadata.get("phoneNumber"));

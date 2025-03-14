@@ -1,10 +1,12 @@
-package com.chatapplication.user_setting.service;
+package com.chatapplication.user_setting.service.impl;
 
 import com.chatapplication.user_setting.dto.GenerateOtpResponseDTO;
 import com.chatapplication.user_setting.dto.LoginRequestDTO;
 import com.chatapplication.user_setting.dto.SignUpRequestDTO;
 import com.chatapplication.user_setting.exception.ResourceNotFoundException;
 import com.chatapplication.user_setting.repository.UserRepository;
+import com.chatapplication.user_setting.service.interfaces.IAuthService;
+import com.chatapplication.user_setting.service.interfaces.IOtpService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,15 +37,15 @@ public class AuthServiceImpl implements IAuthService {
     public GenerateOtpResponseDTO signUpUser(SignUpRequestDTO signUpRequestDTO) {
         // Check user is blocked or not
         String phoneNumber = signUpRequestDTO.getPhoneNumber();
-        if(redisTemplate.hasKey("block:"+phoneNumber)){
+        if (redisTemplate.hasKey("block:" + phoneNumber)) {
             // tell user you are blocked
-            return new GenerateOtpResponseDTO("You are temporarily blocked, Please try again later",false,"");
+            return new GenerateOtpResponseDTO("You are temporarily blocked, Please try again later", false, "");
         }
 
         if (userRepository.existsByEmail(signUpRequestDTO.getEmail())) {  // check email exist or not
-            return new GenerateOtpResponseDTO("Email already exist!",false,"");
+            return new GenerateOtpResponseDTO("Email already exist!", false, "");
         } else if (userRepository.existsByPhoneNumber(signUpRequestDTO.getPhoneNumber())) {  // then check phone number exist or not
-            return new GenerateOtpResponseDTO("Phone Number already exist",false,"");
+            return new GenerateOtpResponseDTO("Phone Number already exist", false, "");
         } else {
             // as otp generated and send successfully
             String uuid = UUID.randomUUID().toString();
@@ -51,30 +53,30 @@ public class AuthServiceImpl implements IAuthService {
             metadata.put("email", signUpRequestDTO.getEmail());
             metadata.put("phoneNumber", signUpRequestDTO.getPhoneNumber());
 
-            String metaKey = "signup:verified:"+uuid;
+            String metaKey = "signup:verified:" + uuid;
             redisTemplate.opsForValue().set(metaKey, metadata);
-            redisTemplate.expire(metaKey,2, TimeUnit.DAYS);
+            redisTemplate.expire(metaKey, 2, TimeUnit.DAYS);
             Pair<String, Boolean> generateOtpResponse = otpService.generateOtp(signUpRequestDTO.getPhoneNumber(), uuid, "signup");
-            return new GenerateOtpResponseDTO(generateOtpResponse.getFirst(),generateOtpResponse.getSecond(),uuid);
+            return new GenerateOtpResponseDTO(generateOtpResponse.getFirst(), generateOtpResponse.getSecond(), uuid);
         }
     }
 
     @Override
     public GenerateOtpResponseDTO userLogin(LoginRequestDTO loginRequestDTO) {
         if (!userRepository.existsByPhoneNumber(loginRequestDTO.getPhoneNumber())) {
-            return new GenerateOtpResponseDTO("Phone Number not exist, Please sign up first",false,"");
+            return new GenerateOtpResponseDTO("Phone Number not exist, Please sign up first", false, "");
         } else {
             String email = userRepository.findEmail(loginRequestDTO.getPhoneNumber()).orElseThrow(() -> new ResourceNotFoundException("Email Not Found"));
             String uuid = UUID.randomUUID().toString();
             Map<String, Object> metadata = new HashMap<String, Object>();
-            metadata.put("email",email);
+            metadata.put("email", email);
             metadata.put("phoneNumber", loginRequestDTO.getPhoneNumber());
 
-            String metaKey = "login:verified:"+uuid;
+            String metaKey = "login:verified:" + uuid;
             redisTemplate.opsForValue().set(metaKey, metadata);
-            redisTemplate.expire(metaKey,2, TimeUnit.DAYS);
+            redisTemplate.expire(metaKey, 2, TimeUnit.DAYS);
             Pair<String, Boolean> generateOtpResponse = otpService.generateOtp(loginRequestDTO.getPhoneNumber(), uuid, "login");
-            return new GenerateOtpResponseDTO(generateOtpResponse.getFirst(),generateOtpResponse.getSecond(),uuid);
+            return new GenerateOtpResponseDTO(generateOtpResponse.getFirst(), generateOtpResponse.getSecond(), uuid);
         }
     }
 }
