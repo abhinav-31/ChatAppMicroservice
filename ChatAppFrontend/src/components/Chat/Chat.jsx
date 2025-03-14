@@ -8,7 +8,7 @@ import AddContact from "../Modal/AddContactModal";
 import {
 	getUser,
 	refreshToken,
-} from "../../services/UserSettingService/UserSettingServiceAuth";
+} from "../../services/UserSettingService/UserSettingService";
 import { useDispatch, useSelector } from "react-redux";
 import { saveUserProfile } from "../../features/slice/userSlice";
 import toast from "react-hot-toast";
@@ -30,7 +30,7 @@ const Chat = () => {
 	const { chatList } = useSelector((state) => state.chatLists);
 	const { contacts } = useSelector((state) => state.contacts);
 	const user = useSelector((state) => state.user);
-	
+
 	const senderId = user.senderId;
 
 	// Ref and State for Resizing
@@ -84,7 +84,7 @@ const Chat = () => {
 	const handleSidebarItemClick = (item) => {
 		setSelectedSidebarItem(item);
 	};
-	
+
 	const handleSelectContact = (contactId) => {
 		const existingChat = !!chatList[contactId];
 		if (existingChat) {

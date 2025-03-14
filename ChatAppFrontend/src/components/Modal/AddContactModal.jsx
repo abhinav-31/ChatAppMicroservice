@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { saveContact } from "../../services/UserSettingService/UserSettingServiceAuth";
+import { saveContact } from "../../services/UserSettingService/UserSettingService";
 import { addContact } from "../../features/slice/contactSlice";
 import toast from "react-hot-toast";
 import { updateChatListForUnknownContact } from "../../features/slice/chatListSlice";
