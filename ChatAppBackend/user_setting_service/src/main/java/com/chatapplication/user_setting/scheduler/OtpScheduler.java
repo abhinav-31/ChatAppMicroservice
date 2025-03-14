@@ -17,19 +17,19 @@ public class OtpScheduler {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
-    public void checkOtpExipration(){
+    public void checkOtpExipration() {
         Set<String> keys = redisTemplate.keys("otpTimestamp:*");
-        if(keys!=null){
-            for(String key : keys){
+        if (keys != null) {
+            for (String key : keys) {
                 Long otpTimeStamp = (Long) redisTemplate.opsForValue().get(key);
-                if(otpTimeStamp != null && System.currentTimeMillis()- otpTimeStamp > TimeUnit.DAYS.toMillis(2)){
-                    String phoneNumber = key.split (":")[1];
+                if (otpTimeStamp != null && System.currentTimeMillis() - otpTimeStamp > TimeUnit.DAYS.toMillis(2)) {
+                    String phoneNumber = key.split(":")[1];
 
                     // check if the user has any OTPs generated but not verified
-                    String otpKey = "otp:"+phoneNumber;
-                    if(redisTemplate.hasKey(otpKey)){
-                        log.info("User with phoneNumber:"+phoneNumber+" for 30 days");
-                        RedisUtils.blockUserIndefinitely(phoneNumber,"You are blocked for indefinite period for generating OTP but not verified",30,redisTemplate);
+                    String otpKey = "otp:" + phoneNumber;
+                    if (redisTemplate.hasKey(otpKey)) {
+                        log.info("User with phoneNumber:" + phoneNumber + " for 30 days");
+                        RedisUtils.blockUserIndefinitely(phoneNumber, "You are blocked for indefinite period for generating OTP but not verified", 30, redisTemplate);
                     }
 
                     // cleanup expired keys
