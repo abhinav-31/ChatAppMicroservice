@@ -13,25 +13,25 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtils {
 
     // check user block
-    public void checkUserBlocked(String phoneNumber,RedisTemplate<String, Object> redisTemplate){
-        String blockKey = "block:"+phoneNumber;
+    public void checkUserBlocked(String phoneNumber, RedisTemplate<String, Object> redisTemplate) {
+        String blockKey = "block:" + phoneNumber;
         Long block = (Long) redisTemplate.opsForValue().get(blockKey);
-        if(block != null){
+        if (block != null) {
             throw new UserBlockedException("You are temporarily blocked, Please try again later");
         }
 
         String indefiniteBlockKey = "indefiniteBlock:" + phoneNumber;
-        String indefiniteBlock = (String)redisTemplate.opsForValue().get(indefiniteBlockKey);
-        log.debug("IndefiniteBlock: {}" ,indefiniteBlock);
-        if(indefiniteBlock != null){
+        String indefiniteBlock = (String) redisTemplate.opsForValue().get(indefiniteBlockKey);
+        log.debug("IndefiniteBlock: {}", indefiniteBlock);
+        if (indefiniteBlock != null) {
             throw new UserBlockedException("You are blocked for indefinite period, Please use different phone number");
         }
     }
 
     // block user indefinitely
-    public void blockUserIndefinitely(String phoneNumber, String message,int INDEFINITE_BLOCK,RedisTemplate<String, Object> redisTemplate){
+    public void blockUserIndefinitely(String phoneNumber, String message, int INDEFINITE_BLOCK, RedisTemplate<String, Object> redisTemplate) {
         String indefiniteBlockKey = "indefiniteBlock:" + phoneNumber;
-        redisTemplate.opsForValue().set(indefiniteBlockKey,message,INDEFINITE_BLOCK, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(indefiniteBlockKey, message, INDEFINITE_BLOCK, TimeUnit.DAYS);
         throw new UserBlockedException("You are blocked for indefinite period, Please use different phone number");
     }
 }
