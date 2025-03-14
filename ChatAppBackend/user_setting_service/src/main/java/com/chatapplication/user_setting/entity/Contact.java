@@ -5,18 +5,20 @@ import lombok.*;
 
 @Builder
 @Entity
-@Table(name="contacts")
+@Table(name = "contacts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Contact extends BaseEntity {
 
+    private String contactName;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")       // Many contact has One User
+    @JoinColumn(name = "user_id", nullable = false)       // Many contact has One User
     private User user;                  // Owner who owns the contact relationship
 
     @ManyToOne
-    @JoinColumn(name="contact_id", nullable=false)
+    @JoinColumn(name = "contact_id", nullable = false)
     private User contact;               // Persons the owner connected to
 }
