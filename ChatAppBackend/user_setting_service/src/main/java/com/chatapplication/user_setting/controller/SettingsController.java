@@ -1,6 +1,6 @@
 package com.chatapplication.user_setting.controller;
 
-import com.chatapplication.user_setting.service.ISettingsService;
+import com.chatapplication.user_setting.service.interfaces.ISettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +16,14 @@ public class SettingsController {
 
     // get user settings
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserSettings(@PathVariable Long userId){
+    public ResponseEntity<?> getUserSettings(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.FOUND).body(settingsService.getUserSettings(userId));
     }
+
     // update user settings
     @PostMapping("/update_settings/{userId}")
-    public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, @RequestBody Map<String,String> updateSetting){
-        return ResponseEntity.status(HttpStatus.OK).body(settingsService.updateUserSettings(userId,updateSetting));
+    public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, @RequestBody Map<String, String> updateSetting) {
+        return ResponseEntity.status(HttpStatus.OK).body(settingsService.updateUserSettings(userId, updateSetting));
     }
 
 }
