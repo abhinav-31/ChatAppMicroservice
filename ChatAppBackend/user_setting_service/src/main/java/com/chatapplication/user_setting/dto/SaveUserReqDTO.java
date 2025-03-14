@@ -16,5 +16,5 @@ public class SaveUserReqDTO {
     @Size(min = 1, max = 10, message = "Please enter a username")
     private String username;
     private String about;
-    private String profilePicture;
+    private String profilePhoto;
 }
