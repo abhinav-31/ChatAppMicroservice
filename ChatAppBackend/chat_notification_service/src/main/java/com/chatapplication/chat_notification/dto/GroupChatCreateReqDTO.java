@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class GroupChatCreateReqDTO {
     private String groupName;
-    private String admin;
+    private String groupAdmin;
     private List<String> members;
 }

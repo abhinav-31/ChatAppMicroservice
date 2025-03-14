@@ -2,6 +2,11 @@
 import { useEffect } from 'react';
 
 const Modal = ({ isOpen, onClose, title, children }) => {
+  const handleOutsideClick = (e)=>{
+if(e.target===e.currentTarget){
+  onClose();
+}
+  }
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -13,9 +18,9 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center p-4 z-50"
-    onClick={onClose}>
-      <div className="bg-white rounded-lg w-full max-w-md">
+    <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center p-4 z-10"
+    onClick={handleOutsideClick}>
+      <div className="bg-white rounded-lg w-full max-w-md transition z-50" onClick={(e)=>e.stopPropagation()}>
         <div className="ml-2 mr-2 p-4 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button

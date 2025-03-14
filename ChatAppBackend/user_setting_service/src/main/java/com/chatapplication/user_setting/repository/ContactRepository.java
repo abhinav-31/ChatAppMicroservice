@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface ContactRepository extends JpaRepository<Contact,Long> {
-    @Query("select c.contact from Contact c where c.user.id=:userId")
-    List<User> findContactsByUserId(Long userId);
+public interface ContactRepository extends JpaRepository<Contact, Long> {
+    Optional<List<Contact>> findByUser(User user);
 
     boolean existsByUserAndContact(User user, User contact);
 }

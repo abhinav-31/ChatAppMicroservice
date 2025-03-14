@@ -16,4 +16,7 @@ public interface IGroupChatService {
     List<ChatResponseDTO> getGroupChatForUsers(String userId);
 
     String deleteGroup(String groupId);
+
+    List<GetGroupChatResDTO> getGroupChat(String userId);
+
 }

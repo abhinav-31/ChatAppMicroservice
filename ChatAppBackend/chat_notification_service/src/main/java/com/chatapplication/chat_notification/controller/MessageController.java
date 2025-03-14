@@ -1,8 +1,9 @@
 package com.chatapplication.chat_notification.controller;
 
+import com.chatapplication.chat_notification.dto.GroupStatusPayloadDTO;
 import com.chatapplication.chat_notification.dto.MessageDTO;
+import com.chatapplication.chat_notification.dto.MessageStatusPayloadDTO;
 import com.chatapplication.chat_notification.service.interfaces.IMessageService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -13,13 +14,18 @@ public class MessageController {
     @Autowired
     private IMessageService messageService;
 
-    @MessageMapping("/send")
+    @MessageMapping("/group-chat")
     public void sendMessage(@Payload MessageDTO message) {
-        messageService.sendMessage(message);
+        messageService.sendGroupMessage(message);
     }
-//
-//    @GetMapping("/chat/{chatId}")
-//    public ResponseEntity<?> getMessages(@PathVariable String chatId) {
-//        return ResponseEntity.status(HttpStatus.OK).body(messageService.getMessageForChat(chatId));
-//    }
+
+    @MessageMapping("/status")
+    public void messageStatus(@Payload MessageStatusPayloadDTO messageStatusPayloadDTO) {
+        messageService.updateMessageStatus(messageStatusPayloadDTO);
+    }
+
+    @MessageMapping("/seenBy")
+    public void messageSeen(@Payload GroupStatusPayloadDTO groupStatusPayloadDTO) {
+        messageService.updateGroupMessageSeenBy(groupStatusPayloadDTO);
+    }
 }

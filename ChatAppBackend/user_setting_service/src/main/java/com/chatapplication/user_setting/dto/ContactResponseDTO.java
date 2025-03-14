@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactResponseDTO {
-    private String username;
+    private String contactName;
     private String phoneNumber;
     private String about;
-    private String profilePhoto;
+    private String contactProfilePhoto;
+    private String receiverId;
 }

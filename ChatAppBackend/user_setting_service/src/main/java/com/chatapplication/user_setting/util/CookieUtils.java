@@ -6,14 +6,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.ResponseCookie;
 
+import java.time.Duration;
+
 @UtilityClass
 public class CookieUtils {
 
-    public String extractCookie(HttpServletRequest request){
+    public String extractCookie(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
-        if(cookies!=null){
-            for(Cookie cookie : cookies){
-                if("signUpSessionId".equals(cookie.getName())){
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookieName.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
@@ -21,22 +23,22 @@ public class CookieUtils {
         return null;
     }
 
-    public String generateCookie(String value, long maxAge){
-        ResponseCookie cookie = ResponseCookie.from("signUpSessionId", value)
+    public String generateCookie(String cookieName, String value, long maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, value)
                 .httpOnly(true)
                 .path("/")
-                .sameSite("Strict")   // prevents CSRF attacks
-                .maxAge(maxAge)
+                .sameSite("Lax")
+                .maxAge(Duration.ofDays(maxAge))
                 .build();
         return cookie.toString();
     }
 
     // Delete Cookie
-    public String deleteCookie(HttpServletRequest request, String cookieName){
-        ResponseCookie cookie = ResponseCookie.from(cookieName,null)
+    public String deleteCookie(String cookieName) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, null)
                 .httpOnly(true)
                 .path("/")
-                .sameSite("Strict")   // prevents CSRF attacks
+                .sameSite("Lax")
                 .maxAge(0)
                 .build();
         return cookie.toString();
