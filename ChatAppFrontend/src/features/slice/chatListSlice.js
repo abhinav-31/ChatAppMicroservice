@@ -105,8 +105,7 @@ const chatListSlice = createSlice({
 					(contact) => contact.receiverId === message.sender
 				);
 
-				state.chatList.unshift({
-					id: message.sender,
+				state.chatList[message.sender]={
 					name: existingContact
 						? existingContact.contactName
 						: "Unknown Contact",
@@ -114,7 +113,7 @@ const chatListSlice = createSlice({
 						? existingContact.contactProfilePhoto
 						: "pimg.jpg",
 					latestMessage: message.content,
-				});
+				};
 			}
 		},
 		updateChatListForUnknownContact(state, action) {
@@ -124,9 +123,9 @@ const chatListSlice = createSlice({
 			const unknownContact = !!state.chatList[receiverId];
 			if (unknownContact) {
 				// update the contactName
-				unknownContact.contactName = contactName;
+				unknownContact.name = contactName;
 				// update the contactProfilePhoto
-				unknownContact.contactProfilePhoto = contactProfilePhoto;
+				unknownContact.profilePhoto = contactProfilePhoto;
 			}
 		},
 		deleteChat(state, action) {
