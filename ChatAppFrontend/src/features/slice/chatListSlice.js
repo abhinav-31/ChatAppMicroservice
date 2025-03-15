@@ -13,7 +13,8 @@ export const fetchChatLists = createAsyncThunk(
 
 		// Get updated state
 		const { contacts } = getState().contacts;
-		const { privateMessages, unreadMessages, pendingChatIds } = getState().messages;
+		const { privateMessages, unreadMessages, pendingChatIds } =
+			getState().messages;
 		const { groupsInfo, groupMessages, unreadGroupMessages } =
 			getState().groupChats;
 
@@ -21,22 +22,34 @@ export const fetchChatLists = createAsyncThunk(
 
 		//   Process private chats (known & unknown contacts)
 		Object.entries(pendingChatIds).forEach(([receiverId, chatId]) => {
-			const contact = contacts.find((contact) => contact.receiverId === receiverId);
-			const messages = privateMessages[chatId]?.messages || unreadMessages[chatId]?.messages || [];
-			
+			const contact = contacts.find(
+				(contact) => contact.receiverId === receiverId
+			);
+			const messages =
+				privateMessages[chatId]?.messages ||
+				unreadMessages[chatId]?.messages ||
+				[];
+
 			chatList[receiverId] = {
 				name: contact?.contactName || "Unknown Contact",
 				profilePhoto: contact?.contactProfilePhoto || "pimg.png",
-				latestMessage: messages.length ? messages[messages.length - 1].content : "",
+				latestMessage: messages.length
+					? messages[messages.length - 1].content
+					: "",
 				unreadCount: unreadMessages?.length || 0,
 				type: "private",
-				latestTimestamp: messages.length ? messages[messages.length - 1].sentTime : "",
-			}
-		})
+				latestTimestamp: messages.length
+					? messages[messages.length - 1].sentTime
+					: "",
+			};
+		});
 
 		//   Process group chats
 		Object.entries(groupsInfo).forEach(([groupId, group]) => {
-			const messages = groupMessages[groupId]?.messages || unreadGroupMessages[groupId]?.messages || [];
+			const messages =
+				groupMessages[groupId]?.messages ||
+				unreadGroupMessages[groupId]?.messages ||
+				[];
 			chatList[groupId] = {
 				name: group.groupName,
 				profilePhoto: "gimg.png",
@@ -49,13 +62,14 @@ export const fetchChatLists = createAsyncThunk(
 					? messages[messages.length - 1].sentTime
 					: "",
 			};
-			
 		});
 
 		// Sort chatList by latestTimestamp (descending order)
-		const chatOrder = Object.entries(chatList).sort((a, b) => b[1].latestTimestamp - a[1].latestTimestamp).map(([id]) => id);
+		const chatOrder = Object.entries(chatList)
+			.sort((a, b) => b[1].latestTimestamp - a[1].latestTimestamp)
+			.map(([id]) => id);
 
-		return {chatList, chatOrder};
+		return { chatList, chatOrder };
 	}
 );
 
@@ -63,7 +77,7 @@ const chatListSlice = createSlice({
 	name: "chatLists",
 	initialState: {
 		chatList: {},
-		chatOrder:[],
+		chatOrder: [],
 		status: "idle",
 		error: null,
 	},
@@ -71,12 +85,12 @@ const chatListSlice = createSlice({
 		addChat(state, action) {
 			const { chat } = action.payload;
 			if (!state.chatList[chat.id]) {
-				state.chatList[chat.id]={
+				state.chatList[chat.id] = {
 					name: "",
 					profilePhoto: "",
 					latestMessage: "",
-					type:"",
-				}
+					type: "",
+				};
 			}
 			state.chatList[chat.id] = {
 				name: chat.name,
@@ -84,9 +98,9 @@ const chatListSlice = createSlice({
 				latestMessage: chat.latestMessage,
 				type: chat.type,
 			};
-			
-			if(!state.chatOrder.find(id=> id===chat.id)){
-			state.chatOrder.unshift(chat.id);
+
+			if (!state.chatOrder.find((id) => id === chat.id)) {
+				state.chatOrder.unshift(chat.id);
 			}
 		},
 		updateChatList(state, action) {
@@ -97,7 +111,7 @@ const chatListSlice = createSlice({
 				// If chat already exists,
 				//update the latest message
 				state.chatList[message.sender].latestMessage = message.content;
-				
+
 				// and update the contact name if contactName: Unknown Contact
 			} else {
 				// Add new chat entry, but check if sender in the message is in contacts
@@ -105,7 +119,7 @@ const chatListSlice = createSlice({
 					(contact) => contact.receiverId === message.sender
 				);
 
-				state.chatList[message.sender]={
+				state.chatList[message.sender] = {
 					name: existingContact
 						? existingContact.contactName
 						: "Unknown Contact",
@@ -123,18 +137,17 @@ const chatListSlice = createSlice({
 			const unknownContact = !!state.chatList[receiverId];
 			if (unknownContact) {
 				// update the contactName
-				unknownContact.name = contactName;
+				state.chatList[receiverId].name = contactName;
 				// update the contactProfilePhoto
-				unknownContact.profilePhoto = contactProfilePhoto;
+				state.chatList[receiverId].profilePhoto =
+					contactProfilePhoto || "pimg.jpg";
 			}
 		},
 		deleteChat(state, action) {
 			const { receiverId } = action.payload;
 			delete state.chatList[receiverId];
 		},
-		updateChatOrder(state, action) {
-			
-		}
+		updateChatOrder(state, action) {},
 	},
 	extraReducers: (builder) => {
 		builder
