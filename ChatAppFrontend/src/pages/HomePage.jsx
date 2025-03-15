@@ -2,7 +2,7 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { SiLetsencrypt } from "react-icons/si";
 import { useAuthFlow } from "../constant/constants";
 import { useEffect } from "react";
-import { refreshToken } from "../services/UserSettingService/UserSettingServiceAuth";
+import { refreshToken } from "../services/UserSettingService/UserSettingService";
 import toast from "react-hot-toast";
 
 const HomePage = () => {
