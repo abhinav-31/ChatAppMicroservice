@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
 	loginUser,
 	signup,
-} from "../../services/UserSettingService/UserSettingServiceAuth";
+} from "../../services/UserSettingService/UserSettingService";
 import { useAuthFlow } from "../../constant/constants";
 
 const AuthForm = () => {
@@ -48,7 +48,6 @@ const AuthForm = () => {
 				toast.success(loginResponse.data);
 			}
 			navigate("/otpVerify");
-			// handleOtpComponent(true);
 		} catch (error) {
 			toast.error("Error: " + error.message);
 			// reset the fields
@@ -67,9 +66,6 @@ const AuthForm = () => {
 			sessionStorage.removeItem("keepLoggedIn"); // Remove the key if unchecked
 		}
 	};
-	useEffect(() => {
-		console.log("Set Title: " + title);
-	}, []);
 	return (
 		<div className='flex flex-col items-center justify-center bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-10 lg:p-12 w-full max-w-[90%] sm:max-w-[60%] md:max-w-[40%] lg:max-w-[30%] mx-auto mt-6 border border-gray-200'>
 			{/* Title */}
@@ -80,7 +76,7 @@ const AuthForm = () => {
 			{/* Email Input */}
 			<div
 				className='w-full mb-4'
-				hidden={title === "login" ? true : false}
+				hidden={title === "login"}
 			>
 				<label
 					className='text-base font-medium text-gray-700 sm:text-lg'

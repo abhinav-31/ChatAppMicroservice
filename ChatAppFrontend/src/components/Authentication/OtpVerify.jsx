@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { otpVerify } from "../../services/UserSettingService/UserSettingServiceAuth";
+import { otpVerify } from "../../services/UserSettingService/UserSettingService";
 import { useAuthFlow } from "../../constant/constants";
 import {  useNavigate } from "react-router";
 
