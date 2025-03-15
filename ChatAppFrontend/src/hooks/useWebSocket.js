@@ -5,6 +5,7 @@ import SockJS from "sockjs-client";
 
 const useWebSocket = (
 	senderId,
+	url,
 	onMessage,
 	incomingMessageStatus,
 	incomingGroupNotification,
@@ -40,18 +41,18 @@ const useWebSocket = (
 		if (!senderId) return;
 		const connect = () => {
 			console.log("🔌 Opening WebSocket...");
-			const socket = new SockJS("http://192.168.1.2:8083/ws");
+			const socket = new SockJS(`${url}`);
 			const client = new Client({
 				webSocketFactory: () => socket,
-				reconnectDelay: 5000,
-				heartbeatIncoming: 10000,
-				heartbeatOutgoing: 10000,
+				reconnectDelay: 2000,
+				heartbeatIncoming: 0,
+				heartbeatOutgoing: 5000,
 				debug: (str) => console.debug("WebSocket Log:", str),
 
 				onConnect: () => {
 					setIsConnected(true);
 					console.log("  WebSocket Connection Established");
-
+					client.reconnectDelay = 2000;
 					// Subscribe to initial topics
 					topics.forEach((topic) => subscribeToTopic(client, topic));
 
@@ -60,13 +61,13 @@ const useWebSocket = (
 
 				onDisconnect: () => {
 					setIsConnected(false);
-					console.log("⚠️ WebSocket Disconnected");
+					console.log("WebSocket Disconnected");
 					unsubscribeAll();
 				},
 
 				onStompError: (frame) => {
 					console.error("WebSocket Error:", frame.headers["message"]);
-					client.reconnectDelay = 5000;
+					client.reconnectDelay = 2000;
 				},
 			});
 
@@ -89,7 +90,7 @@ const useWebSocket = (
 	const subscribeToTopic = (client, topic) => {
 		if (!subscriptionsRef.current.has(topic)) {
 			const subscription = client.subscribe(topic, (message) => {
-				console.log(`📩 Message received on ${topic}:`, message.body);
+				console.log(`Message received on ${topic}:`, message.body);
 				const parsedMessage = JSON.parse(message.body);
 
 				if (topic.includes("/status")) {
@@ -151,7 +152,7 @@ const useWebSocket = (
 	// Funtion to send group notification
 	const sendGroupNotification = useCallback(
 		(destination, body) => {
-			if (stompClient && stompClient.connected) {
+			if (stompClient?.connected) {
 				stompClient.publish({
 					destination,
 					body: JSON.stringify(body),
