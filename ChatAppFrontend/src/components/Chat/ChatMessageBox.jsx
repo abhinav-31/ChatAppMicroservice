@@ -42,7 +42,7 @@ const ChatMessageBox = ({
 	const handleEmojiClick = useCallback((emoji) => {
 		setMessage((prev) => prev + emoji.emoji);
 		setShowEmojiPicker(false);
-	}, []);
+	}, [setShowEmojiPicker]);
 
 	// Handle file selection
 	const handleFileSelect = useCallback((event) => {
@@ -51,11 +51,14 @@ const ChatMessageBox = ({
 	}, []);
 
 	// Open file picker for attachments
-	const openFilePicker = useCallback((type) => {
-		console.log(`Selected attachment type: ${type}`);
-		fileInputRef.current?.click();
-		setShowAttachmentOptions(false);
-	}, []);
+	const openFilePicker = useCallback(
+		(type) => {
+			console.log(`Selected attachment type: ${type}`);
+			fileInputRef.current?.click();
+			setShowAttachmentOptions(false);
+		},
+		[setShowAttachmentOptions]
+	);
 
 	// Send message when user presses send
 	const sendMessage = useCallback(() => {
@@ -83,7 +86,7 @@ const ChatMessageBox = ({
 	// Toggle dropdown menu
 	const toggleDropdown = useCallback(() => {
 		setIsDropdownOpen((prev) => !prev);
-	}, []);
+	}, [setIsDropdownOpen]);
 
 	return (
 		<div
