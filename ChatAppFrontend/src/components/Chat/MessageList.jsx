@@ -2,6 +2,7 @@
 import { useSelector } from "react-redux";
 import MessageBubble from "./MessageBubble";
 import { useBackdropContext } from "../../constant/constants";
+import { useMemo } from "react";
 
 const MessageList = ({ selectedChat, chat }) => {
 	const user = useSelector((state) => state.user);
@@ -10,11 +11,16 @@ const MessageList = ({ selectedChat, chat }) => {
 		(state) => state.messages
 	);
 	const { groupMessages } = useSelector((state) => state.groupChats);
-	const {setAddContactClicked}= useBackdropContext();
-	
+	const { setAddContactClicked } = useBackdropContext();
 
 	const chatId = selectedChat ? pendingChatIds[selectedChat] : null;
-	const { contacts } = useSelector(state => state.contacts);
+	const { contacts } = useSelector((state) => state.contacts);
+	const isContact = useMemo(() => {
+		return (
+			contacts.find((contact) => contact.receiverId === selectedChat) !==
+			undefined
+		);
+	}, [contacts, selectedChat]);
 	//   Fetch messages from the correct Redux slice
 	const messages =
 		chat?.type === "private"
@@ -34,12 +40,15 @@ const MessageList = ({ selectedChat, chat }) => {
 	return (
 		<>
 			{chat?.type === "private" &&
-				contacts.some((contact) => contact.receiverId !== selectedChat) && (
-					<div className=' flex justify-center text-center'>
-						<p>Not a contact.</p>
+				(contacts.length === 0 || !isContact) && (
+					<div className=' flex justify-center text-center mt-2 cursor-pointer'>
+						<p >Not a contact.</p>
 						<b
-						onClick={(e) => { e.stopPropagation(); setAddContactClicked(true) }}
-							className='underline cursor-pointer'
+							onClick={(e) => {
+								e.stopPropagation();
+								setAddContactClicked(true);
+							}}
+							className='underline   bg-clip-text  bg-gradient-to-r from-blue-950 via-cyan-600 to-purple-950 cursor-pointer'
 						>
 							Add Contact
 						</b>
@@ -50,29 +59,34 @@ const MessageList = ({ selectedChat, chat }) => {
 				style={{ scrollbarWidth: "thin", msOverflowStyle: "none" }}
 			>
 				<div className='mx-6 space-y-1'>
-					{messages.length > 0 ?  ( messages.map((message, index) => {
-						const isSender = message.sender === senderId;
-						const isFirstSender =
-							index === 0 ||
-							messages[index - 1].sender === senderId;
-						const isFirstReceiver =
-							index === 0 ||
-							messages[index - 1].sender !== senderId;
+					{messages.length > 0 ? (
+						messages.map((message, index) => {
+							const isSender = message.sender === senderId;
+							const isFirstSender =
+								index === 0 ||
+								messages[index - 1].sender === senderId;
+							const isFirstReceiver =
+								index === 0 ||
+								messages[index - 1].sender !== senderId;
 
-						return (
-							<MessageBubble
-								key={index}
-								message={message}
-								isSender={isSender}
-								isFirstSender={isFirstSender}
-								isFirstReceiver={isFirstReceiver}
-								timestamp={message.sentTime}
-								chatType={chat?.type} //   Pass `chatType` to MessageBubble
-							/>
-						);
-					})) : (
-							<p className='text-gray-500 text-center'>Start chatting with {chat?.name || chat?.contactName}...</p>
-					) }
+							return (
+								<MessageBubble
+									key={index}
+									message={message}
+									isSender={isSender}
+									isFirstSender={isFirstSender}
+									isFirstReceiver={isFirstReceiver}
+									timestamp={message.sentTime}
+									chatType={chat?.type} //   Pass `chatType` to MessageBubble
+								/>
+							);
+						})
+					) : (
+						<p className='text-gray-500 text-center'>
+							Start chatting with{" "}
+							{chat?.name || chat?.contactName}...
+						</p>
+					)}
 				</div>
 			</div>
 		</>
