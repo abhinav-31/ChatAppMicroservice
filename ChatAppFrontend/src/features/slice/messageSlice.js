@@ -179,12 +179,12 @@ const messageSlice = createSlice({
 			if (!state.unreadMessages[chatId]) return;
 
 			// Convert Immer Proxies to Plain Objects
-			const existingMessages = current(
-				state.privateMessages[chatId]?.messages || []
-			);
-			const unreadMessages = current(
-				state.unreadMessages[chatId].messages
-			);
+			const existingMessages = state.privateMessages[chatId]?.messages
+				? [...state.privateMessages[chatId].messages]
+				: [];
+			const unreadMessages = state.unreadMessages[chatId].messages
+				? [...state.unreadMessages[chatId].messages]
+				: [];
 
 			// Merge existing and unread messages
 			const mergedMessages = [...existingMessages, ...unreadMessages];
