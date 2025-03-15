@@ -9,7 +9,12 @@ import {
 } from "../features/slice/messageSlice";
 import useWebSocket from "../hooks/useWebSocket";
 import toast from "react-hot-toast";
-import { addGroupSendMessage, incomingGroupMessage } from "../features/slice/groupChatSlice";
+import {
+	addGroupSendMessage,
+	incomingGroupMessage,
+} from "../features/slice/groupChatSlice";
+
+const websocketUrl = import.meta.env.VITE_API_GATEWAY_URL;
 
 const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 	const dispatch = useDispatch();
@@ -24,14 +29,14 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 			(groupId) => `/topic/group-${groupId}`
 		);
 	}, [groupsInfo]);
-	
+
 	const topics = useMemo(
 		() => [
 			`/queue/${user.senderId}`,
 			`/queue/status-read-${user.senderId}`,
 			`/queue/status-delivered-${user.senderId}`,
 			`/queue/group-add-${user.senderId}`,
-			...groupTopics
+			...groupTopics,
 		],
 		[user.senderId, groupTopics]
 	);
@@ -43,10 +48,16 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 	const handleIncomingGroupMessage = (topic, groupMessage) => {
 		const groupId = topic.split("/topic/group-")[1];
 		console.log("GroupId: ", groupId);
-		if(groupMessage.sender === user.senderId) return
-		dispatch(incomingGroupMessage({groupId, incomingMessage: groupMessage, isGroupOpen:selectedChat===groupId}))
-	}
-	
+		if (groupMessage.sender === user.senderId) return;
+		dispatch(
+			incomingGroupMessage({
+				groupId,
+				incomingMessage: groupMessage,
+				isGroupOpen: selectedChat === groupId,
+			})
+		);
+	};
+
 	const handleIncomingMessage = (topic, newMessage) => {
 		// Convert newMessage into an array
 		const messagesArray = Array.isArray(newMessage)
@@ -71,7 +82,7 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 				const date = new Date();
 				const timeZoneOffset = date.getTimezoneOffset() * 60 * 1000;
 				const local = date - timeZoneOffset;
-				const isoD = new Date(local).toISOString().slice(0,-1);
+				const isoD = new Date(local).toISOString().slice(0, -1);
 				const deliveredStatusBody = {
 					chatId: chatId,
 					sender: message.sender,
@@ -122,95 +133,110 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 			return;
 		}
 		dispatch(updateMessageStatus(statusBody));
-		
 	};
 
 	const [sendGroupNotification, sendMessage, isConnected] = useWebSocket(
 		user?.senderId ? user.senderId : null,
-		"http://192.168.1.2:8083/ws",
-		user?.senderId ? topics : [],
+		`${websocketUrl}/ws`,
 		handleIncomingMessage,
 		handleIncomingMessageStatus,
 		handleIncomingGroupNotification,
-		handleIncomingGroupMessage
+		handleIncomingGroupMessage,
+		user?.senderId ? topics : []
 	);
-	const handleSendMessage = useCallback((type, destination, message, file) => {
-		if (!isConnected) {
-			toast.error("WebSocket is not connected");
-			return;
-		}
-		if (!selectedChat) {
-			toast.error("Select a chat first!");
-			return;
-		}
-		const date = new Date();
-		const timeZoneOffset = date.getTimezoneOffset() * 60 * 1000;
-		const local = date - timeZoneOffset;
-		if (type === 'group') {
-			
-			const isoG = new Date(local).toISOString().slice(0, -1);
-			const groupMessageBody = {
-				sender: user.senderId,
-				groupId:selectedChat,
-				content:message,
-				sentTimestamp:isoG,
+	const handleSendMessage = useCallback(
+		(type, destination, message, file) => {
+			if (!isConnected) {
+				toast.error("WebSocket is not connected");
+				return;
 			}
-			sendMessage(destination, groupMessageBody);
-			dispatch(addGroupSendMessage({groupId: selectedChat, message: groupMessageBody}))
-			return;
-		}
-		const receiverId = selectedChat;
-		const chatId = pendingChatIds[receiverId];
-		const sentTimestamp = new Date(local).toISOString().slice(0, -1);
-		const newMessage = {
-			participants: [user.senderId, receiverId],
-			message,
-			sentTimestamp,
-		};
-
-		sendMessage(destination, newMessage);
-
-		if (chatId) {
-			// If a chatId already exists, update the Redux store optimistically.
-			dispatch(addSentMessage({ chatId, message: newMessage }));
-		} else {
-			// If no chatId exists, do not add optimistically.
-			// Directly dispatch getChatId which will create the chat entry with the message.
-			dispatch(
-				getChatId({
-					senderId: user.senderId,
-					receiverId,
-					tempMessage: newMessage,
-				})
-			);
-			if (tempChat) {
+			if (!selectedChat) {
+				toast.error("Select a chat first!");
+				return;
+			}
+			const date = new Date();
+			const timeZoneOffset = date.getTimezoneOffset() * 60 * 1000;
+			const local = date - timeZoneOffset;
+			if (type === "group") {
+				const isoG = new Date(local).toISOString().slice(0, -1);
+				const groupMessageBody = {
+					sender: user.senderId,
+					groupId: selectedChat,
+					content: message,
+					sentTimestamp: isoG,
+				};
+				sendMessage(destination, groupMessageBody);
 				dispatch(
-					addChat({
-						chat: {
-							id: tempChat.receiverId,
-							name: tempChat.contactName,
-							profilePhoto: tempChat.contactProfilePhoto,
-							latestMessage: newMessage.message,
-							type: type,
-						},
+					addGroupSendMessage({
+						groupId: selectedChat,
+						message: groupMessageBody,
 					})
 				);
+				return;
 			}
-		}
+			const receiverId = selectedChat;
+			const chatId = pendingChatIds[receiverId];
+			const sentTimestamp = new Date(local).toISOString().slice(0, -1);
+			const newMessage = {
+				participants: [user.senderId, receiverId],
+				message,
+				sentTimestamp,
+			};
 
-		if (file) {
-			console.log("File sent:", file);
-		}
-		setTempChat(null);
-	}, [isConnected, selectedChat, user.senderId, pendingChatIds, tempChat, sendMessage, dispatch, setTempChat]);
+			sendMessage(destination, newMessage);
+
+			if (chatId) {
+				// If a chatId already exists, update the Redux store optimistically.
+				dispatch(addSentMessage({ chatId, message: newMessage }));
+			} else {
+				// If no chatId exists, do not add optimistically.
+				// Directly dispatch getChatId which will create the chat entry with the message.
+				dispatch(
+					getChatId({
+						senderId: user.senderId,
+						receiverId,
+						tempMessage: newMessage,
+					})
+				);
+				if (tempChat) {
+					dispatch(
+						addChat({
+							chat: {
+								id: tempChat.receiverId,
+								name: tempChat.contactName,
+								profilePhoto: tempChat.contactProfilePhoto,
+								latestMessage: newMessage.message,
+								type: type,
+							},
+						})
+					);
+				}
+			}
+
+			if (file) {
+				console.log("File sent:", file);
+			}
+			setTempChat(null);
+		},
+		[
+			isConnected,
+			selectedChat,
+			user.senderId,
+			pendingChatIds,
+			tempChat,
+			sendMessage,
+			dispatch,
+			setTempChat,
+		]
+	);
 	const webSocketValues = useMemo(
 		() => ({
 			sendGroupNotification,
 			sendMessage,
 			handleSendMessage,
-			isConnected
+			isConnected,
 		}),
-		[isConnected,sendGroupNotification, sendMessage, handleSendMessage]
+		[isConnected, sendGroupNotification, sendMessage, handleSendMessage]
 	);
 
 	return webSocketValues;
