@@ -72,7 +72,7 @@ const MessageInput = ({
 			</div>
 			<div className='relative flex-1 flex flex-col-reverse ml-7 '>
 				<div className='relative flex-grow items-center'>
-					<div className='border border-gray-200 rounded-md p-2 bg-white pr-12 pl-10 pb-0.5'>
+					<div className='border border-gray-200 rounded-t-2xl p-2 bg-white pr-12 pl-10 pb-0.5'>
 	
 						<TextareaAutosize			value={message}
 							onChange={(e) => setMessage(e.target.value)}
