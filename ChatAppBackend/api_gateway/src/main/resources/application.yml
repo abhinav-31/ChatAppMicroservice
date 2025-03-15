@@ -1,51 +1,4 @@
-# server:
-#   port: 8083
 
-# spring:
-#   application:
-#     name: API-GATEWAY
-#   cloud:
-#     gateway:
-#       default-filters:
-#         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
-#       discovery:
-#         locator:
-#           enabled: true
-#           lower-case-service-id: true
-#       routes:
-#         - id: user-setting-service
-#           uri: lb://USER-SETTING-SERVICE
-#           predicates:
-#             - Path=/auth/**, /user/**, /contacts/**
-#         - id: chat-notification-service
-#           uri: lb://CHAT-NOTIFICATION-SERVICE
-#           predicates:
-#             - Path=/private-chat/**, /group-chat/**, /ws/**
-#       globalcors:
-#         cors-configurations:
-#           "[/**]":
-#             allowedOriginPatterns: "http://192.168.1.2:5173"
-#             allowedMethods:
-#               - GET
-#               - POST
-#               - PUT
-#               - DELETE
-#               - OPTIONS
-#             allowedHeaders:
-#               - "*"
-#             allowCredentials: true
-#             exposedHeaders:
-#               - Set-Cookie
-#               - Authorization
-
-# eureka:
-#   client:
-#     register-with-eureka: true
-#     fetch-registry: true
-#     service-url:
-#       defaultZone: http://service-registry:8761/eureka
-#   instance:
-#     hostname: api-gateway
 server:
   port: 8083
 
@@ -78,7 +31,8 @@ spring:
       globalcors:
         cors-configurations:
           "[/**]":
-            allowedOriginPatterns: "http://192.168.1.2:5173"
+#            allowedOriginPatterns: "http://192.168.1.2:5173"
+            allowedOriginPatterns: "${ALLOWED_ORIGINS:*}"
             allowedMethods:
               - GET
               - POST
