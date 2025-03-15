@@ -185,7 +185,7 @@ const CreateGroupModal = ({ createGroupClicked, setCreateGroupClicked, chatWidth
 			)}
 
 			{/* Dropdown Outside Modal */}
-			{addMembersButtonClick && (
+			{addMembersButtonClicked && (
 				<div
 					ref={dropdownRef}
 					className='fixed bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-[60] p-2 overflow-x-hidden'
