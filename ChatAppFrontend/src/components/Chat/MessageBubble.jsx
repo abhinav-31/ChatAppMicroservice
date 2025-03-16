@@ -23,7 +23,7 @@ const MessageBubble = ({
 		} else if (message.deliveredTime) {
 			checkmark = (
 				<span className='ml-1'>
-					<img src='check-read-svgrepo-com.svg' alt='✔✔' />
+					<img src='double-check.svg' alt='✔✔' />
 				</span>
 			); //   Double Check (Delivered, Gray)
 		} else if (message.sentTime) {
@@ -55,7 +55,6 @@ const MessageBubble = ({
 					maxWidth: "65%",
 				}} //   Adds space for timestamp
 			>
-				
 				{/*   Show sender name for group messages */}
 				{chatType === "group" && !isSender && (
 					<p className='text-xs font-semibold text-gray-500'>
