@@ -6,6 +6,7 @@ import { TfiThemifyFavicon } from "react-icons/tfi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { useNavigate } from "react-router";
+import { logout } from "../../services/UserSettingService/UserSettingService";
 
 const ChatSideBar = ({ onSidebarItemClick }) => {
 	const [isRotated, setIsRotated] = useState(false);
@@ -26,6 +27,17 @@ const ChatSideBar = ({ onSidebarItemClick }) => {
 		},
 		[isUserClicked, isRotated, onSidebarItemClick]
 	);
+	
+	const handleLogout = async () => {
+		try {
+			sessionStorage.removeItem("accessToken");
+			await logout();
+			toast.success("User logout successfully!");
+			navigate("/");
+		} catch (error) {
+			toast.error('Error in Logout: ', error?.message);
+		}	
+	}
 
 	return (
 		<div className='border-r border-gray-200  w-16 h-full flex flex-col items-center py-4 space-y-6'>
@@ -49,11 +61,7 @@ const ChatSideBar = ({ onSidebarItemClick }) => {
 			<RiLogoutCircleLine
 				title='logout'
 				className='text-gray-500 text-2xl cursor-pointer hover:text-red-800'
-				onClick={() => {
-					sessionStorage.removeItem("accessToken");
-					toast.success("User logout successfully!");
-					navigate("/");
-				}}
+				onClick={handleLogout}
 			/>
 		</div>
 	);
