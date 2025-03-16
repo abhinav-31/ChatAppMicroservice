@@ -19,6 +19,7 @@ userSettingService.interceptors.request.use(
 			"/auth/sign-up",
 			"/auth/login",
 			"/auth/verify-otp/",
+			"/auth/logout"
 		];
 		// Safer path checking
 		const isPublicPath = publicPaths.some(
