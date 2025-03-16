@@ -118,6 +118,15 @@ export const saveContact = async (addContactData) => {
 	}
 }
 
+export const logout = async () => {
+	const sub_path = 'logout';
+	try {
+		const response = await userSettingService.get(`/${basePath_1}/${sub_path}`);
+		return response;
+	} catch (error) {
+		Error(error, 'Logout');
+	}
+}
 
 const Error = (error, apiName) => {
 	console.error(
