@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -114,7 +118,8 @@ public class AuthController {
 
     // Refresh Token End-Point
     @GetMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@CookieValue(name = "loginSessionId", required = false) String loginSessionId) {
+    public ResponseEntity<?> refreshToken(
+            @CookieValue(name = "loginSessionId", required = false) String loginSessionId) {
 
         if (loginSessionId == null || jwtService.validateToken(loginSessionId) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please Logged In");
@@ -126,7 +131,10 @@ public class AuthController {
         String newAccessToken = jwtService.generateAccessJWT(email);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("accessToken", newAccessToken));
     }
+    
     // Logout
-
-
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, CookieUtils.deleteCookie(LOGIN_COOKIE)).body("Logout Out Successfully");
+    }
 }
