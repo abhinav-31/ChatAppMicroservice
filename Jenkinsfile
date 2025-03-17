@@ -15,15 +15,15 @@ pipeline {
         stage('Build and Start Services') {
             steps {
                 script {
-                    sh 'docker-compose down'  // Stop any running containers
-                    sh 'docker-compose build' // Build all services
+                    sh 'docker compose down'  // Stop any running containers
+                    sh 'docker compose build' // Build all services
                 }
             }
         }
 
         stage('Run Services') {
             steps {
-                sh 'docker-compose up -d'
+                sh 'docker compose up -d'
             }
         }
 
@@ -37,7 +37,7 @@ pipeline {
     post {
         always {
             script {
-                sh 'docker-compose logs --tail=50'
+                sh 'docker compose logs --tail=50'
             }
         }
         failure {
