@@ -20,10 +20,10 @@ pipeline {
                         file(credentialsId: 'db-env', variable: 'DATABASE_ENV'),
                         file(credentialsId: 'frntd-env', variable: 'FRONTEND_ENV')
                     ]) {
-                        sh "cp ${USER_SETTING_ENV} ./ChatAppBackend/user_setting_service/user_setting.env"
-                        sh "cp ${CHAT_NOTIFICATION_ENV} ./ChatAppBackend/chat_notification_service/chat_notfication.env"
-                        sh "cp ${DATABASE_ENV} ./ChatAppBackend/database.env"
-                        sh "cp ${FRONTEND_ENV} ./ChatAppFrontend/.env.development"
+                        sh "cp ${USER_SETTING_ENV} ./ChatAppMicroservice/ChatAppBackend/user_setting_service/user_setting.env"
+                        sh "cp ${CHAT_NOTIFICATION_ENV} ./ChatAppMicroservice/ChatAppBackend/chat_notification_service/chat_notfication.env"
+                        sh "cp ${DATABASE_ENV} ./ChatAppMicroservice/ChatAppBackend/database.env"
+                        sh "cp ${FRONTEND_ENV} ./ChatAppMicroservice/ChatAppFrontend/.env.development"
                     }
                 }
             }
