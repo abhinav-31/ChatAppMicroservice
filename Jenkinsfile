@@ -16,8 +16,8 @@ pipeline {
                 script {
                     withCredentials([
                         file(credentialsId: 'u-s-env', variable: 'USER_SETTING_ENV'),
-                        file(credentialsId: 'c-n-env', variable: 'CHAT_NOTIFICATION_ENV')
-                        file(credentialsId: 'db-env', variable: 'DATABASE_ENV')
+                        file(credentialsId: 'c-n-env', variable: 'CHAT_NOTIFICATION_ENV'),
+                        file(credentialsId: 'db-env', variable: 'DATABASE_ENV'),
                         file(credentialsId: 'frntd-env', variable: 'FRONTEND_ENV')
                     ]) {
                         sh "cp ${USER_SETTING_ENV} ./ChatAppBackend/user_setting_service/user_setting.env"
