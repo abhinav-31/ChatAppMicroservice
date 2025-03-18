@@ -55,3 +55,12 @@ eureka:
       defaultZone: http://service-registry:8761/eureka
   instance:
     hostname: api-gateway
+    
+management:
+  endpoint:
+    health:
+      access: UNRESTRICTED
+  endpoints:
+    web:
+      exposure:
+        include: health
