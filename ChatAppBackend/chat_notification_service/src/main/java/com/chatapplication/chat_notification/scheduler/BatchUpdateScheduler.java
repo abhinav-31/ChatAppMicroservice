@@ -277,7 +277,6 @@ public class BatchUpdateScheduler {
 
             seenByMap.put(timestamp, users);
         }
-        System.out.println("SeenByMap: " + seenByMap);
         return seenByMap;
     }
 

@@ -39,18 +39,14 @@ public class ContactServiceImpl implements IContactService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         // fetch all contacts
         List<Contact> contacts = contactRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User contact not found"));
-        List<ContactResponseDTO> contactList = new ArrayList<>();
-
-        List<ContactResponseDTO> list = contacts.stream().map(contact -> this.contactResponseDTOBuilder(contact, user)).toList();
-        System.out.println("Contacts list: " + list);
-        return list;
+    
+        return contacts.stream().map(contact -> this.contactResponseDTOBuilder(contact, user)).toList();
     }
 
     @Override
     public ContactResponseDTO addContact(ContactAddReqDTO contactAddReqDTO) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        System.out.println("Contact Phone Number : " + contactAddReqDTO.getContactPhoneNumber());
         User contact = userRepository.findByPhoneNumber(contactAddReqDTO.getContactPhoneNumber()).orElseThrow(() -> new ResourceNotFoundException("Contact is not present in the system"));
 
         // check contact already added for the user

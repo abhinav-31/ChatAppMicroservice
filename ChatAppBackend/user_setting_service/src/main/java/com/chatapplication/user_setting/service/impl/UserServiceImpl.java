@@ -93,16 +93,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String updateUser(SaveUserReqDTO updateRequestDTO) {
-        System.out.println("Username : " + updateRequestDTO.getUsername());
-        System.out.println("About: " + updateRequestDTO.getAbout());
-        System.out.println("Image name: " + updateRequestDTO.getProfilePhoto());
         // Get user from the repository
         User user = userRepository.findById(1L).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         // update the username, about, image if not null
         Optional.ofNullable(updateRequestDTO.getUsername()).ifPresent(user::setUsername);
         Optional.ofNullable(updateRequestDTO.getAbout()).ifPresent(user::setAbout);
         Optional.ofNullable(updateRequestDTO.getProfilePhoto()).ifPresent(user::setProfilePhoto);
-        System.out.println("User after update: " + user);
         userRepository.save(user);
         return "User updated successfully";
     }
