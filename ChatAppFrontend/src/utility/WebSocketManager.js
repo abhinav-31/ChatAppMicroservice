@@ -143,7 +143,7 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 		user?.senderId ? topics : []
 	);
 	const handleSendMessage = useCallback(
-		(type, destination, message, file) => {
+		(type, destination, message) => {
 			if (!isConnected) {
 				toast.error("WebSocket is not connected");
 				return;

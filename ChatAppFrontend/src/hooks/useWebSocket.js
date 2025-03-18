@@ -62,7 +62,7 @@ const useWebSocket = (
 					unsubscribeAll();
 				},
 
-				onStompError: (frame) => {
+				onStompError: () => {
 					client.reconnectDelay = 2000;
 				},
 			});

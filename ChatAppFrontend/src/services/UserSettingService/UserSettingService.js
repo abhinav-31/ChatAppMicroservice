@@ -13,7 +13,7 @@ export const signup = async (signUpData) => {
 		);
 		return response;
 	} catch (error) {
-		Error(error, 'signup')
+		handleError(error, 'signup')
 	}
 };
 
@@ -29,7 +29,7 @@ export const otpVerify = async (otpData) => {
 		);
 		return response;
 	} catch (error) {
-			Error(error, 'otp verify');
+			handleError(error, 'otp verify');
 	}
 };
 
@@ -37,12 +37,12 @@ export const otpVerify = async (otpData) => {
 export const saveUser = async (userSaveData) => {
 	const sub_path = "save";
 	try {
-		const response = await userSettingService.post(
+		await userSettingService.post(
 			`/${basePath_2}/${sub_path}`,
 			userSaveData
 		);
 	} catch (error) {
-		Error(error, 'save user data')
+		handleError(error, 'save user data')
 	}
 };
 
@@ -52,7 +52,7 @@ export const getUser = async () => {
 		const response = await userSettingService.get(`/${basePath_2}/`);
 		return response;
 	} catch (error) {
-		Error(error, 'getting user data');
+		handleError(error, 'getting user data');
 	}
 };
 
@@ -66,7 +66,7 @@ export const updateUser = async (updateUserData) => {
 		);
 		return response;
 	} catch (error) {
-		Error(error, 'update user data');
+		handleError(error, 'update user data');
 	}
 };
 
@@ -80,7 +80,7 @@ export const loginUser = async (loginData) => {
 		);
 		return response;
 	} catch (error) {
-		Error(error, 'user login');
+		handleError(error, 'user login');
 	}
 };
 
@@ -93,7 +93,7 @@ export const refreshToken = async () => {
 		);
 		return response;
 	} catch (error) {
-		Error(error, 'refresh token');
+		handleError(error, 'refresh token');
 	}
 }
 
@@ -104,7 +104,7 @@ export const saveContact = async (addContactData) => {
 		const response = await userSettingService.post(`/${basePath_3}/${sub_path}`, addContactData);
 		return response;
 	} catch(error) {
-		Error(error, 'Add contact');
+		handleError(error, 'Add contact');
 	}
 }
 
@@ -114,11 +114,11 @@ export const logout = async () => {
 		const response = await userSettingService.get(`/${basePath_1}/${sub_path}`);
 		return response;
 	} catch (error) {
-		Error(error, 'Logout');
+		handleError(error, 'Logout');
 	}
 }
 
-const Error = (error, apiName) => {
+const handleError = (error, apiName) => {
 	console.error(
 		`Error in ${apiName} call: `,
 		error.response ? error.response.data : error.message

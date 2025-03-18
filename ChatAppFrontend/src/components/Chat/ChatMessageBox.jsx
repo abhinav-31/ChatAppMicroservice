@@ -52,7 +52,7 @@ const ChatMessageBox = ({
 
 	// Open file picker for attachments
 	const openFilePicker = useCallback(
-		(type) => {
+		() => {
 			fileInputRef.current?.click();
 			setShowAttachmentOptions(false);
 		},

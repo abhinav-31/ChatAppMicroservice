@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
 	fetchChatId,
 	fetchPrivateChats,
@@ -74,7 +74,6 @@ export const getChatId = createAsyncThunk(
 	async ({ senderId, receiverId, tempMessage }, { rejectWithValue }) => {
 		try {
 			const response = await fetchChatId(senderId, receiverId);
-			"Response For getChatID: ", response.data);
 			return {
 				receiverId,
 				chatId: response.data,
@@ -314,7 +313,6 @@ const messageSlice = createSlice({
 			})
 			.addCase(getChatId.fulfilled, (state, action) => {
 				const { chatId, tempMessage } = action.payload;
-				"Temp Message: ", tempMessage);
 				// Prevent duplicate message insertion
 				if (!state.privateMessages[chatId]) {
 					state.privateMessages[chatId] = {

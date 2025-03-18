@@ -4,7 +4,7 @@ import { SiAircall } from "react-icons/si";
 import { HiUserGroup } from "react-icons/hi";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { HiMiniUser } from "react-icons/hi2";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CreateGroupModal from "../Modal/CreateGroupModal";
 import { moveUnreadGroupMessagesToGroupMessages } from "../../features/slice/groupChatSlice";
