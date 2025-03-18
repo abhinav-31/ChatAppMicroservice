@@ -50,7 +50,7 @@ lerna-debug.log*
 node_modules/
 
 # Ignore all application.properties files in any subdirectory
-**/application.properties
+# **/application.properties
 
 # Editor directories and files
 .idea
