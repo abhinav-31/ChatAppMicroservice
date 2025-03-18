@@ -95,10 +95,6 @@ const ChatChatList = ({ onChatSelect, chatWidth }) => {
 
 	const { chatOrder } = useSelector((state) => state.chatLists);
 
-	useEffect(() => {
-		if (chatOrder) console.log("Chats: ", chatOrder);
-	}, [chatOrder]);
-
 	return (
 		<div
 			className='bg-white flex flex-col h-full overflow-hidden border-r border-r-gray-200'

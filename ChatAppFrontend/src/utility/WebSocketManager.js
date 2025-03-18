@@ -47,7 +47,6 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 
 	const handleIncomingGroupMessage = (topic, groupMessage) => {
 		const groupId = topic.split("/topic/group-")[1];
-		console.log("GroupId: ", groupId);
 		if (groupMessage.sender === user.senderId) return;
 		dispatch(
 			incomingGroupMessage({
@@ -77,7 +76,6 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 		// Process each chatId and its messages
 		Object.entries(groupMessagesByChatId).forEach(([chatId, messages]) => {
 			messages.forEach(({ message }) => {
-				console.log("Incoming messageArray : ", message);
 				const isChatOpen = selectedChat === message.sender;
 				const date = new Date();
 				const timeZoneOffset = date.getTimezoneOffset() * 60 * 1000;
@@ -213,9 +211,7 @@ const WebSocketManager = ({ selectedChat, tempChat, setTempChat }) => {
 				}
 			}
 
-			if (file) {
-				console.log("File sent:", file);
-			}
+			
 			setTempChat(null);
 		},
 		[

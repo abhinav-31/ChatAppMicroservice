@@ -20,7 +20,6 @@ const PhoneNumber = () => {
   const handleCancel = () => setIsConfirm(false);
 
   const handleSave = () => {
-    console.log("New phone number:", countryCode + newNumber);
     setIsConfirm(false);
     setNewNumber("");
     setIsNumberComplete(!isNumberComplete);

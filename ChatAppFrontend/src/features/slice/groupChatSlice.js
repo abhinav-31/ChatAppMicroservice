@@ -67,7 +67,6 @@ export const fetchAllGroupChat = createAsyncThunk(
 
 				return acc;
 			}, {});
-			console.log("GroupChat: ", groupChatData);
 			return groupChatData;
 		} catch (error) {
 			return rejectWithValue(error.response?.data || error.message);

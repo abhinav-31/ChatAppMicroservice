@@ -40,7 +40,6 @@ const useWebSocket = (
 	useEffect(() => {
 		if (!senderId) return;
 		const connect = () => {
-			console.log("🔌 Opening WebSocket...");
 			const socket = new SockJS(`${url}`);
 			const client = new Client({
 				webSocketFactory: () => socket,
@@ -51,7 +50,6 @@ const useWebSocket = (
 
 				onConnect: () => {
 					setIsConnected(true);
-					console.log("  WebSocket Connection Established");
 					client.reconnectDelay = 2000;
 					// Subscribe to initial topics
 					topics.forEach((topic) => subscribeToTopic(client, topic));
@@ -61,12 +59,10 @@ const useWebSocket = (
 
 				onDisconnect: () => {
 					setIsConnected(false);
-					console.log("WebSocket Disconnected");
 					unsubscribeAll();
 				},
 
 				onStompError: (frame) => {
-					console.error("WebSocket Error:", frame.headers["message"]);
 					client.reconnectDelay = 2000;
 				},
 			});
@@ -90,7 +86,6 @@ const useWebSocket = (
 	const subscribeToTopic = (client, topic) => {
 		if (!subscriptionsRef.current.has(topic)) {
 			const subscription = client.subscribe(topic, (message) => {
-				console.log(`Message received on ${topic}:`, message.body);
 				const parsedMessage = JSON.parse(message.body);
 
 				if (topic.includes("/status")) {
@@ -110,7 +105,6 @@ const useWebSocket = (
 				}
 			});
 			subscriptionsRef.current.set(topic, subscription);
-			console.log(`  Subscribed to topic: ${topic}`);
 		}
 	};
 
@@ -121,7 +115,6 @@ const useWebSocket = (
 				subscription.unsubscribe();
 			});
 			subscriptionsRef.current.clear();
-			console.log("Unsubscribed from all topics");
 		}
 	};
 
@@ -140,9 +133,7 @@ const useWebSocket = (
 					destination,
 					body: JSON.stringify(body),
 				});
-				console.log(`Sent message to ${destination}:`, body);
 			} else {
-				console.warn("No WebSocket connection, message not sent");
 				toast.error("No WebSocket connection, message not sent");
 			}
 		},
@@ -157,9 +148,7 @@ const useWebSocket = (
 					destination,
 					body: JSON.stringify(body),
 				});
-				console.log(`Sent notification to ${destination}:`, body);
 			} else {
-				console.warn("No WebSocket connection, notification not sent");
 				toast.error("No WebSocket connection, notification not sent");
 			}
 		},

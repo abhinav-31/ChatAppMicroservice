@@ -74,7 +74,7 @@ export const getChatId = createAsyncThunk(
 	async ({ senderId, receiverId, tempMessage }, { rejectWithValue }) => {
 		try {
 			const response = await fetchChatId(senderId, receiverId);
-			console.log("Response For getChatID: ", response.data);
+			"Response For getChatID: ", response.data);
 			return {
 				receiverId,
 				chatId: response.data,
@@ -314,7 +314,7 @@ const messageSlice = createSlice({
 			})
 			.addCase(getChatId.fulfilled, (state, action) => {
 				const { chatId, tempMessage } = action.payload;
-				console.log("Temp Message: ", tempMessage);
+				"Temp Message: ", tempMessage);
 				// Prevent duplicate message insertion
 				if (!state.privateMessages[chatId]) {
 					state.privateMessages[chatId] = {

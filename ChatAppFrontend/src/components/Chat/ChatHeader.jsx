@@ -58,7 +58,6 @@ const ChatHeader = ({
 								key={option}
 								className='p-2 hover:bg-gray-100 cursor-pointer'
 								onClick={() => {
-									console.log(option);
 									if (option === "Clear chat") {
 										handleClearChat();
 									}

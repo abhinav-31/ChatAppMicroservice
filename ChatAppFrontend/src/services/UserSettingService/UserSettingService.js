@@ -11,7 +11,6 @@ export const signup = async (signUpData) => {
 			`/${basePath_1}/${sub_path}`,
 			signUpData
 		);
-		console.log("Signup Response: ", response.data);
 		return response;
 	} catch (error) {
 		Error(error, 'signup')
@@ -20,7 +19,6 @@ export const signup = async (signUpData) => {
 
 // Post Request for Otp Verify
 export const otpVerify = async (otpData) => {
-	console.log("Otp data: ",otpData);
 	const sub_path = "verify-otp";
 	const keepLoggedIn = otpData.keepLoggedIn;
 	const otpVerifyBody = { otp: otpData.otp, context: otpData.context };
@@ -29,7 +27,6 @@ export const otpVerify = async (otpData) => {
 			`/${basePath_1}/${sub_path}/${keepLoggedIn}`,
 			otpVerifyBody
 		);
-		console.log("OTP verify response: ", response.data);
 		return response;
 	} catch (error) {
 			Error(error, 'otp verify');
@@ -38,14 +35,12 @@ export const otpVerify = async (otpData) => {
 
 // Post Request for Saving User: name, about, profile (i am just sending file name)
 export const saveUser = async (userSaveData) => {
-	console.log("User save data: ", userSaveData);
 	const sub_path = "save";
 	try {
 		const response = await userSettingService.post(
 			`/${basePath_2}/${sub_path}`,
 			userSaveData
 		);
-		console.info("User Save Response: ", response.data);
 	} catch (error) {
 		Error(error, 'save user data')
 	}
@@ -55,7 +50,6 @@ export const saveUser = async (userSaveData) => {
 export const getUser = async () => {
 	try {
 		const response = await userSettingService.get(`/${basePath_2}/`);
-		console.info("User data: ", response);
 		return response;
 	} catch (error) {
 		Error(error, 'getting user data');
@@ -70,7 +64,6 @@ export const updateUser = async (updateUserData) => {
 			`/${basePath_2}/${sub_path}`,
 			updateUserData
 		);
-		console.log("Update user response: " + response.data);
 		return response;
 	} catch (error) {
 		Error(error, 'update user data');
@@ -85,7 +78,6 @@ export const loginUser = async (loginData) => {
 			`/${basePath_1}/${sub_path}`,
 			loginData
 		);
-		console.log("Login Response: " + response.data);
 		return response;
 	} catch (error) {
 		Error(error, 'user login');
@@ -99,7 +91,6 @@ export const refreshToken = async () => {
 		const response = await userSettingService.get(
 			`/${basePath_1}/${sub_path}`
 		);
-		console.log("Refresh Token Response: ", response.data.accessToken);
 		return response;
 	} catch (error) {
 		Error(error, 'refresh token');
@@ -111,7 +102,6 @@ export const saveContact = async (addContactData) => {
 	const sub_path = 'addContact';
 	try {
 		const response = await userSettingService.post(`/${basePath_3}/${sub_path}`, addContactData);
-		console.log("Add contact response: ",response.data);
 		return response;
 	} catch(error) {
 		Error(error, 'Add contact');

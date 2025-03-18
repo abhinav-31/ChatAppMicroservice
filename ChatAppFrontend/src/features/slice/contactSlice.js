@@ -3,7 +3,6 @@ import userSettingService from "../../config/UserSettingServiceAxiosConfig";
 
 export const fetchContacts = createAsyncThunk("contacts/fetchContacts", async () => {
 	const response = await userSettingService.get("/contacts/");
-	console.log("contact fetch response: ", response);
 	return response.data;
 });
 
