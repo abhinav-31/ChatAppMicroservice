@@ -114,12 +114,6 @@ services:
         condition: service_healthy
       chat-notification-service:
         condition: service_healthy
-    # environment:
-    #   - NODE_ENV=development
-    #   # Use localhost with exposed ports for direct access from browser
-    #   - VITE_USER_SETTING_SERVICE_URL=http://localhost:8083
-    #   - VITE_CHAT_NOTIFICATION_SERVICE_URL=http://localhost:8083
-    #   - VITE_API_GATEWAY_URL=http://localhost:8083
     env_file:
       - ./ChatAppFrontend/.env.development
     restart: unless-stopped
