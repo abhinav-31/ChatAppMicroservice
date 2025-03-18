@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .cors(cors -> {
                 })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/save", "/auth/refresh-token", "/auth/sign-up", "/auth/login", "/auth/verify-otp/{keepLoggedIn}","/auth/logout").permitAll()
+                        .requestMatchers("/actuator/health","/user/save", "/auth/refresh-token", "/auth/sign-up", "/auth/login", "/auth/verify-otp/{keepLoggedIn}","/auth/logout").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
