@@ -8,7 +8,9 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+                deleteDir()
                 git credentialsId: 'git-ssh-key', url: 'git@github.com:abhinav-31/ChatAppMicroservice.git', branch: 'main'
+                sh 'chmod +x ./enable_rabbitmq_plugins.sh'
             }
         }
         stage('Inject Secrets') {
@@ -20,10 +22,10 @@ pipeline {
                         file(credentialsId: 'db-env', variable: 'DATABASE_ENV'),
                         file(credentialsId: 'frntd-env', variable: 'FRONTEND_ENV')
                     ]) {
-                        sh "cp ${USER_SETTING_ENV} ./ChatAppMicroservice/ChatAppBackend/user_setting_service/"
-                        sh "cp ${CHAT_NOTIFICATION_ENV} ./ChatAppMicroservice/ChatAppBackend/chat_notification_service/"
-                        sh "cp ${DATABASE_ENV} ./ChatAppMicroservice/ChatAppBackend/"
-                        sh "cp ${FRONTEND_ENV} ./ChatAppMicroservice/ChatAppFrontend/"
+                        sh 'cp "$USER_SETTING_ENV" ./ChatAppBackend/user_setting_service/'
+                        sh 'cp "$CHAT_NOTIFICATION_ENV" ./ChatAppBackend/chat_notification_service/'
+                        sh 'cp "$DATABASE_ENV" ./ChatAppBackend/'
+                        sh 'cp "$FRONTEND_ENV" ./ChatAppFrontend/'
                     }
                 }
             }
@@ -31,8 +33,8 @@ pipeline {
         stage('Build and Start Services') {
             steps {
                 script {
-                    sh 'docker compose down'  // Stop any running containers
-                    sh 'docker compose build' // Build all services
+                    sh 'docker compose down'
+                    sh 'docker compose build'
                 }
             }
         }
@@ -58,6 +60,7 @@ pipeline {
         }
         failure {
             echo "Build failed. Check logs for details."
+            sh "docker compose down"
         }
         success {
             echo "Deployment successful!"
